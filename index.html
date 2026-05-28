@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor Vinted - Vercel Cron</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; background: #0f172a; color: #e2e8f0; }
+      .card { background: #111827; border: 1px solid #334155; border-radius: 10px; padding: 18px; max-width: 700px; }
+      code { background: #1e293b; padding: 2px 6px; border-radius: 6px; }
+      button { margin-top: 8px; padding: 10px 14px; border: 0; border-radius: 8px; background: #2563eb; color: white; cursor: pointer; }
+      pre { background: #020617; border: 1px solid #334155; border-radius: 8px; padding: 12px; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Monitor Vinted su Vercel</h1>
+      <p>Stato corrente letto da <code>/api/status</code>.</p>
+      <button id="refresh">Aggiorna stato</button>
+      <pre id="output">Caricamento...</pre>
+    </div>
+    <script>
+      async function loadStatus() {
+        const response = await fetch("/api/status");
+        const data = await response.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      }
+      document.getElementById("refresh").addEventListener("click", loadStatus);
+      loadStatus();
+    </script>
+  </body>
+  </html>
