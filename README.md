@@ -1,10 +1,10 @@
-# 🛍️ Vinted Monitor + Telegram (Vercel Cron + JavaScript)
+# 🛍️ Vinted Monitor + Telegram (Vercel + cron-job.org)
 
-Monitor Vinted compatibile con Vercel: controlla annunci a intervalli automatici con Cron e invia notifiche su Telegram.
+Monitor Vinted compatibile con Vercel: controlla annunci a intervalli automatici usando cron-job.org e invia notifiche su Telegram.
 
 ## Come funziona
 
-- `Vercel Cron` chiama `/api/cron` ogni minuto.
+- `cron-job.org` chiama `/api/run-now` a intervalli.
 - L'endpoint legge gli annunci Vinted.
 - I nuovi annunci vengono notificati su Telegram.
 - Lo stato (`seen items`, cutoff, contatori) viene salvato in `Upstash Redis`, quindi resta persistente.
@@ -33,16 +33,13 @@ Template completo in `.env.example`.
 3. Imposta tutte le environment variables.
 4. Redeploy.
 
-`vercel.json` include già il cron:
-
-- path: `/api/cron`
-- schedule: `*/1 * * * *` (ogni minuto)
+`vercel.json` è compatibile con piano Hobby (senza cron interno Vercel).
 
 ## Endpoint disponibili
 
 - `GET /api/status` → stato monitor
-- `POST /api/run-now` → esegue un check manuale (richiede header `Authorization: Bearer <CRON_SECRET>`)
-- `GET /api/cron` → endpoint invocato dal cron (richiede stesso header, usato da Vercel)
+- `POST /api/run-now` → esegue un check manuale (header `Authorization: Bearer <CRON_SECRET>`)
+- `GET /api/run-now?secret=<CRON_SECRET>` → endpoint per cron-job.org
 
 ## Test rapido post-deploy
 
@@ -55,7 +52,13 @@ curl -X POST https://tuo-progetto.vercel.app/api/run-now \
   -H "Authorization: Bearer TUO_CRON_SECRET"
 ```
 
-4. Controlla se arriva la notifica Telegram.
+4. Configura cron-job.org:
+
+- URL: `https://tuo-progetto.vercel.app/api/run-now?secret=TUO_CRON_SECRET`
+- Request method: `GET`
+- Schedule: ogni 1 minuto (o quello che preferisci)
+
+5. Controlla se arriva la notifica Telegram.
 
 ## Note
 
