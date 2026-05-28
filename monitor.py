@@ -470,6 +470,18 @@ class VintedMonitor:
 
         return None
 
+    def _send_startup_message(self):
+        """Invia sempre un messaggio di avvio quando il monitor parte."""
+        search_text = self.scraper.search_params.get("search_text", "N/A")
+        seen_count = len(self.tracker.seen_ids)
+        self.notifier.send_message(
+            "🟢 <b>Monitor Vinted avviato!</b>\n\n"
+            f"🔍 Ricerca: <code>{search_text}</code>\n"
+            f"📂 Annunci già tracciati: {seen_count}\n"
+            f"⏱ Intervallo: ogni {CHECK_INTERVAL} secondi\n\n"
+            "Ti avviserò quando trovo nuovi annunci! 🔔"
+        )
+
     @staticmethod
     def _get_item_timestamp(item: dict) -> float:
         """
@@ -544,13 +556,6 @@ class VintedMonitor:
 
             logger.info(
                 f"📋 Prima esecuzione: {len(all_ids)} annunci segnati come visti (no notifica)"
-            )
-            self.notifier.send_message(
-                "🟢 <b>Monitor Vinted avviato!</b>\n\n"
-                f"🔍 Ricerca: <code>{self.scraper.search_params.get('search_text', 'N/A')}</code>\n"
-                f"📦 Annunci attuali: {len(all_ids)}\n"
-                f"⏱ Intervallo: ogni {CHECK_INTERVAL} secondi\n\n"
-                "Ti avviserò quando trovo nuovi annunci! 🔔"
             )
             return
 
@@ -663,6 +668,7 @@ class VintedMonitor:
         logger.info(f"⏱️ Intervallo di controllo: {CHECK_INTERVAL}s")
         logger.info(f"🌐 Browser impersonato: {BROWSER_IMPERSONATE}")
         logger.info("─" * 60)
+        self._send_startup_message()
 
         # Loop principale
         try:

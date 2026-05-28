@@ -5,4 +5,3 @@ seen_items.json
 venv/
 .venv/
 logs/
-node_modules/
